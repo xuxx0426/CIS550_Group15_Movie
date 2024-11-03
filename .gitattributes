@@ -1,2 +1,4 @@
 C:/Users/setup/Downloads/RawData/ml-latest.zip filter=lfs diff=lfs merge=lfs -text
 C:/Users/setup/Downloads/RawData/movies_supplement.csv filter=lfs diff=lfs merge=lfs -text
+RawData/ml-latest.zip filter=lfs diff=lfs merge=lfs -text
+RawData/movies_supplement.csv filter=lfs diff=lfs merge=lfs -text
