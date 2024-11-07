@@ -15,7 +15,7 @@ The Data folder contains all raw data, cleaned data, and cleaning scripts. We us
 <img width="1108" alt="Screenshot 2024-10-15 at 3 30 15 PM" src="https://github.com/user-attachments/assets/58917c61-1ea5-4504-a76c-50b6835aea53">
 
 ## SQL Queries
-SQL queries can be found in this file.
+SQL queries can be found in this [file](https://github.com/xuxx0426/CIS550_Group15_Movie/blob/main/SQL%20Queries/0_Create_database.txt).
 
 ## (not done yet)
 - Getting Started
