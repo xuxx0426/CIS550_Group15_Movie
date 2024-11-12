@@ -3,7 +3,7 @@
   "rds_port": "5432",
   "rds_user": "grp15_share",
   "rds_password": "share_PW5500",
-  "rds_db": "postgres",
+  "rds_db": "movies",
   "server_host": "localhost",
   "server_port": "8080"
 }

@@ -14,38 +14,38 @@ app.use(cors({
 // 1.1 Route to display the top 10 highest-rated movies with names and posters
 app.get('/top10movies', routes.top10Movies);
 
-// 1.2 Route to display the top 10 highest-rated movies for a specific genre
-app.get('/top10bygenre/:genre', routes.top10Genre);
+// // 1.2 Route to display the top 10 highest-rated movies for a specific genre
+// app.get('/top10bygenre/:genre', routes.top10Genre);
 
-// 1.3 Route to create a new user account (need both username and password)
-app.get("/createuser", routes.createuser)
+// // 1.3 Route to create a new user account (need both username and password)
+// app.get("/createuser", routes.createuser)
 
-// 1.4 Route to update a user's password
-app.get("/updatepassword", routes.updatePassword)
+// // 1.4 Route to update a user's password
+// app.get("/updatepassword", routes.updatePassword)
 
-// 1.5 Route to display liked movies of the logged-in user
-app.get("/likedmovies/:userID", routes.likedmovies)
+// // 1.5 Route to display liked movies of the logged-in user
+// app.get("/likedmovies/:userID", routes.likedmovies)
 
-// 1.6 Route to find top 3 genres based on liked movies and display the top 10 rated movies in those genres
-app.get("/top3genres", routes.top3Genres)
+// // 1.6 Route to find top 3 genres based on liked movies and display the top 10 rated movies in those genres
+// app.get("/top3genres", routes.top3Genres)
 
-// 1.7 Route to find top 3 directors based on liked movies and display the top 10 rated movies directed by these directors
-app.get("/top3directors", routes.top3Directors)
+// // 1.7 Route to find top 3 directors based on liked movies and display the top 10 rated movies directed by these directors
+// app.get("/top3directors", routes.top3Directors)
 
-// 1.8 Route to find tags in liked movies, rank by frequency, and create recommendations based on tags
-app.get("/recommendbytags", routes.recommendByTags)
+// // 1.8 Route to find tags in liked movies, rank by frequency, and create recommendations based on tags
+// app.get("/recommendbytags", routes.recommendByTags)
 
-// 1.9 Route to search movies by title, tag, genre, director, language, or release year
-app.get("/searchmovies", routes.searchMovies)
+// // 1.9 Route to search movies by title, tag, genre, director, language, or release year
+// app.get("/searchmovies", routes.searchMovies)
 
-// 1.10 Route to display comprehensive movie details
-app.get('/moviedetails/:movieID', routes.movieDetails);
+// // 1.10 Route to display comprehensive movie details
+// app.get('/moviedetails/:movieID', routes.movieDetails);
 
-// 1.11 Route to like a movie and add the user’s ID and movie to the Like table
-app.get('/likemovie', routes.likeMovie);
+// // 1.11 Route to like a movie and add the user’s ID and movie to the Like table
+// app.get('/likemovie', routes.likeMovie);
 
-// 1.12 Route to remove a movie from the Like table
-app.get('/removelikedmovie', routes.removeLikedMovie);
+// // 1.12 Route to remove a movie from the Like table
+// app.get('/removelikedmovie', routes.removeLikedMovie);
 
 
 app.listen(config.server_port, () => {
