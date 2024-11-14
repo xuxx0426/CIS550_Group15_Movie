@@ -26,14 +26,14 @@ app.get('/top10movies', routes.top10Movies);
 // // 1.5 Route to display liked movies of the logged-in user
 // app.get("/likedmovies/:userID", routes.likedmovies)
 
-// // 1.6 Route to find top 3 genres based on liked movies and display the top 10 rated movies in those genres
-// app.get("/top3genres", routes.top3Genres)
+// 1.6 Route to find top 3 genres based on liked movies and display the top 10 rated movies in those genres
+app.get("/:top3genresUserID", routes.top3GenresUserID)
 
-// // 1.7 Route to find top 3 directors based on liked movies and display the top 10 rated movies directed by these directors
-// app.get("/top3directors", routes.top3Directors)
+// 1.7 Route to find top 3 directors based on liked movies and display the top 10 rated movies directed by these directors
+app.get("/top3directorsUserID", routes.top3DirectorsUserID)
 
-// // 1.8 Route to find tags in liked movies, rank by frequency, and create recommendations based on tags
-// app.get("/recommendbytags", routes.recommendByTags)
+// 1.8 Route to find tags in liked movies, rank by frequency, and create recommendations based on tags
+app.get("/recommendbytagsUserID", routes.recommendByTagsUserID)
 
 // // 1.9 Route to search movies by title, tag, genre, director, language, or release year
 // app.get("/searchmovies", routes.searchMovies)
