@@ -8,23 +8,25 @@ app.use(cors({
     origin: '*',
 }));
 
-// We use express to define our various API endpoints and
+app.use(express.json());
+
+// We use express to define our various  API endpointsand
 // provide their handlers that we implemented in routes.js
 
-// 1.1 Route to display the top 10 highest-rated movies with names and posters
+// 1.1 Route to display the top 10 highest-rated movies with names and ratings
 app.get('/top10movies', routes.top10Movies);
 
-// // 1.2 Route to display the top 10 highest-rated movies for a specific genre
-// app.get('/top10bygenre/:genre', routes.top10Genre);
+// 1.2 Route to display the top 10 highest-rated movies for a specific genre
+app.get('/top10bygenre/:genre', routes.top10Genre);
 
-// // 1.3 Route to create a new user account (need both username and password)
-// app.get("/createuser", routes.createuser)
+// 1.3 Route to create a new user account (need both userid and password)
+app.post("/createuser", routes.createUser)
 
-// // 1.4 Route to update a user's password
-// app.get("/updatepassword", routes.updatePassword)
+// 1.4 Route to update a user's password
+app.post("/updatepassword", routes.updatePassword)
 
-// // 1.5 Route to display liked movies of the logged-in user
-// app.get("/likedmovies/:userID", routes.likedmovies)
+// 1.5 Route to display liked movies of the logged-in user
+app.get("/likedmovies/:userID", routes.likedMovies)
 
 // // 1.6 Route to find top 3 genres based on liked movies and display the top 10 rated movies in those genres
 // app.get("/top3genres", routes.top3Genres)
