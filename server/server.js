@@ -29,25 +29,25 @@ app.post("/updatepassword", routes.updatePassword)
 app.get("/likedmovies/:userID", routes.likedMovies)
 
 // 1.6 Route to find top 3 genres based on liked movies and display the top 10 rated movies in those genres
-app.get("/:top3genresUserID", routes.top3GenresUserID)
+app.get("/top3genres/:userID", routes.top3Genres)
 
 // 1.7 Route to find top 3 directors based on liked movies and display the top 10 rated movies directed by these directors
-app.get("/top3directorsUserID", routes.top3DirectorsUserID)
+app.get("/top3directors/:userID", routes.top3Directors)
 
 // 1.8 Route to find tags in liked movies, rank by frequency, and create recommendations based on tags
-app.get("/recommendbytagsUserID", routes.recommendByTagsUserID)
+app.get("/recommendbytags/:userID", routes.recommendByTags)
 
-// // 1.9 Route to search movies by title, tag, genre, director, language, or release year
-// app.get("/searchmovies", routes.searchMovies)
+// 1.9 Route to search movies by title, tag, genre, director, language, or release year
+app.get("/searchmovies", routes.searchMovies);
 
-// // 1.10 Route to display comprehensive movie details
-// app.get('/moviedetails/:movieID', routes.movieDetails);
+// 1.10 Route to display comprehensive movie details
+app.get('/moviedetails/:movieID', routes.movieDetails);
 
-// // 1.11 Route to like a movie and add the user’s ID and movie to the Like table
-// app.get('/likemovie', routes.likeMovie);
+// 1.11 Route to like a movie and add the user’s ID and movie to the Like table
+app.post('/likemovie', routes.likeMovie);
 
 // // 1.12 Route to remove a movie from the Like table
-// app.get('/removelikedmovie', routes.removeLikedMovie);
+app.delete('/removelikedmovie', routes.removeLikedMovie);
 
 
 app.listen(config.server_port, () => {
