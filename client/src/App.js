@@ -5,7 +5,8 @@ import { createTheme } from "@mui/material/styles";
 
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
-import Top3Genres from './pages/Top3Genres';
+import LoginSignupPage from './pages/LoginSignupPage';
+
 
 export const theme = createTheme({
   palette: {
@@ -22,7 +23,7 @@ export default function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/" element={<Top3Genres />} />
+          <Route path="/login" element={<LoginSignupPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

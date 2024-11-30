@@ -1,44 +1,56 @@
-import { AppBar, Container, Toolbar, Typography } from '@mui/material'
+import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
-// The hyperlinks in the NavBar contain a lot of repeated formatting code so a
-// helper component NavText local to the file is defined to prevent repeated code.
-function NavText({ href, text, isMain }) {
+// Custom helper function for navigation links
+function NavItem({ to, text }) {
   return (
-    <Typography
-      variant={isMain ? 'h5' : 'h7'}
-      noWrap
-      style={{
-        marginRight: '30px',
-        fontFamily: 'monospace',
-        fontWeight: 700,
-        letterSpacing: '.3rem',
-      }}
+    <NavLink
+      to={to}
+      style={({ isActive }) => ({
+        textDecoration: 'none',
+        color: isActive ? '#9eb3ba' : 'inherit', // Highlight active link
+        marginRight: '20px',
+        fontWeight: isActive ? 'bold' : 'normal',
+      })}
     >
-      <NavLink
-        to={href}
-        style={{
-          color: 'inherit',
-          textDecoration: 'none',
-        }}
-      >
-        {text}
-      </NavLink>
-    </Typography>
-  )
+      {text}
+    </NavLink>
+  );
 }
 
-// Here, we define the NavBar. Note that we heavily leverage MUI components
-// to make the component look nice. Feel free to try changing the formatting
-// props to how it changes the look of the component.
 export default function NavBar() {
   return (
-    <AppBar position='static'>
-      <Container maxWidth='xl'>
-        <Toolbar disableGutters>
-          <NavText href='/' text='SWIFTIFY' isMain />
-          <NavText href='/albums' text='ALBUMS' />
-          <NavText href='/songs' text='SONGS' />
+    <AppBar position="sticky" sx={{ backgroundColor: '#708090' }}>
+      <Container maxWidth="xl">
+        <Toolbar>
+          {/* Logo */}
+          <Typography
+            variant="h5"
+            noWrap
+            sx={{
+              flexGrow: 1,
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            <NavLink to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+              Filmix
+            </NavLink>
+          </Typography>
+
+          {/* Navigation Links */}
+          <NavItem to="/" text="Home" />
+          <NavItem to="/search" text="Search" />
+          <NavItem to="/recommendations" text="Recommendations" />
+          <NavItem to="/mylist" text="My List" />
+
+          {/* Login/Signup Button */}
+          <Button color="inherit" component={NavLink} to="/login">
+            Login / Signup
+          </Button>
         </Toolbar>
       </Container>
     </AppBar>

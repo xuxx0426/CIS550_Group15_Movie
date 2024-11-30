@@ -46,8 +46,11 @@ app.get('/moviedetails/:movieID', routes.movieDetails);
 // 1.11 Route to like a movie and add the user’s ID and movie to the Like table
 app.post('/likemovie', routes.likeMovie);
 
-// // 1.12 Route to remove a movie from the Like table
+// 1.12 Route to remove a movie from the Like table
 app.delete('/removelikedmovie', routes.removeLikedMovie);
+
+// 1.13 Route to Login
+app.post('/login', routes.loginUser);
 
 
 app.listen(config.server_port, () => {

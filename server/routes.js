@@ -28,15 +28,17 @@ connection.connect((err) => err && console.log(err));
 const top10Movies = async function (req, res) {
     connection.query(`
         SELECT
-            m.movieID movieID,
-            m.title title,
-            mr.average_rating average_rating,
-            mr.n_rating n_rating
+            m.movieID,
+            m.title,
+            mr.average_rating,
+            mr.n_rating
+            ms.poster_link
         FROM
             movies as m
-        JOIN
-            MovieRatings as mr ON m.movieID=mr.movieID
-        WHERE mr.n_rating>=100
+        LEFT JOIN links k ON m.movieID=k.movieID
+        LEFT JOIN MoviesSupplement ms ON k. imdb_id = ms.imdb_id
+        LEFT JOIN Movieratings mr ON m.movieID = mr.movieID
+        WHERE mr.n_rating>=100 
             AND mr.average_rating IS NOT NULL
         ORDER BY mr.average_rating DESC
         LIMIT 10;
@@ -484,6 +486,41 @@ const removeLikedMovie = async (req, res) => {
 };
 
 
+// 1.13 app.post('/login', routes.loginUser);
+const loginUser = async (req, res) => {
+  const { userid, password } = req.body;
+
+  // Validate input
+  if (!userid || !password) {
+    return res.status(400).json({ error: 'User ID and password are required.' });
+  }
+
+  try {
+    // Query to check if the user exists and fetch the password
+    const query = `
+      SELECT password FROM users
+      WHERE userid = $1
+    `;
+    const result = await connection.query(query, [userid]);
+
+    if (result.rowCount === 0) {
+      // User does not exist
+      return res.status(404).json({ error: 'User ID does not exist.' });
+    }
+
+    // Check if the provided password matches the stored password
+    const storedPassword = result.rows[0].password;
+    if (storedPassword !== password) {
+      return res.status(403).json({ error: 'Incorrect password.' });
+    }
+
+    // Login successful
+    res.status(200).json({ message: 'Login successful', userId: userid });
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
 
 // Combine all handlers in a single export object
 module.exports = {
@@ -499,4 +536,5 @@ module.exports = {
     movieDetails,
     likeMovie,
     removeLikedMovie,
+    loginUser,
 }
