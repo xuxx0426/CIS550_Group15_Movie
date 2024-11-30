@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { indigo, amber } from '@mui/material/colors';
@@ -6,6 +7,10 @@ import { createTheme } from "@mui/material/styles";
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import LoginSignupPage from './pages/LoginSignupPage';
+import AccountPage from './pages/AccountPage';
+import { useAuth } from './context/AuthContext';
+
+
 
 
 export const theme = createTheme({
@@ -16,6 +21,8 @@ export const theme = createTheme({
 });
 
 export default function App() {
+  const { authState } = useAuth();
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -24,6 +31,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginSignupPage />} />
+          <Route path="/account" element={<AccountPage userId={authState.userId} />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 const config = require('../config.json');
 
 export default function LoginSignupPage() {
+    const { setAuthState } = useAuth();
     const [isSignup, setIsSignup] = useState(false); // Toggle between login and signup
     const [userID, setUserID] = useState('');
     const [password, setPassword] = useState('');
@@ -36,7 +38,9 @@ export default function LoginSignupPage() {
                 setIsSignup(false);
             } else {
                 alert('Login successful!');
-                navigate('/'); // Redirect to home or personalized page
+                localStorage.setItem('userId', data.userId); // Save user ID to localStorage
+                setAuthState({ userId: data.userId }); // Save user ID in global state
+                navigate('/'); // Redirect to home page
             }
         } catch (err) {
             setError(err.message);

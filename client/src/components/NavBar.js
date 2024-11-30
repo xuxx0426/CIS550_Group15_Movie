@@ -1,5 +1,6 @@
 import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 // Custom helper function for navigation links
 function NavItem({ to, text }) {
@@ -19,6 +20,8 @@ function NavItem({ to, text }) {
 }
 
 export default function NavBar() {
+  const { authState } = useAuth();
+
   return (
     <AppBar position="sticky" sx={{ backgroundColor: '#708090' }}>
       <Container maxWidth="xl">
@@ -47,10 +50,16 @@ export default function NavBar() {
           <NavItem to="/recommendations" text="Recommendations" />
           <NavItem to="/mylist" text="My List" />
 
-          {/* Login/Signup Button */}
-          <Button color="inherit" component={NavLink} to="/login">
-            Login / Signup
-          </Button>
+          {/* Conditional Button */}
+          {authState.userId ? (
+            <Button color="inherit" component={NavLink} to="/account">
+              My Account
+            </Button>
+          ) : (
+            <Button color="inherit" component={NavLink} to="/login">
+              Login / Signup
+            </Button>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

@@ -31,7 +31,7 @@ const top10Movies = async function (req, res) {
             m.movieID,
             m.title,
             mr.average_rating,
-            mr.n_rating
+            mr.n_rating,
             ms.poster_link
         FROM
             movies as m
@@ -62,13 +62,15 @@ const top10Genre = async function (req, res) {
             m.title,
             mg.genre,
             mr.average_rating,
-            mr.n_rating
+            mr.n_rating,
+            ms.poster_link
         FROM
             Moviesgenres as mg
         JOIN
-            MovieRatings as mr ON mg.movieID=mr.movieID
-        JOIN
             movies as m ON mg.movieID=m.movieID
+        LEFT JOIN links k ON m.movieID=k.movieID
+        LEFT JOIN MoviesSupplement ms ON k. imdb_id = ms.imdb_id
+        LEFT JOIN Movieratings mr ON m.movieID = mr.movieID
         WHERE mg.genre in ('${req.params.genre}')
             AND mr.average_rating IS NOT NULL
             AND mr.n_rating >=100
