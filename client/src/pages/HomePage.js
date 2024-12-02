@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Box, Divider, Tab, Tabs, Typography, Grid, Card, CardMedia, CardContent } from '@mui/material';
 const config = require('../config.json');
 
@@ -7,6 +8,8 @@ export default function HomePage() {
   const [genres, setGenres] = useState(['All', 'Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Fantasy', 'Film-Noir', 'Horror', 'IMAX', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western']);
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const scrollableContainerRef = useRef(null);
 
   // Fetch the top 10 movies or movies by genre
   const fetchMovies = (genre) => {
@@ -30,10 +33,18 @@ export default function HomePage() {
   // Fetch movies on component mount or when the selected genre changes
   useEffect(() => {
     fetchMovies(selectedGenre);
+    // Reset scroll position to the start
+    if (scrollableContainerRef.current) {
+      scrollableContainerRef.current.scrollLeft = 0;
+    }
   }, [selectedGenre]);
 
   const handleGenreChange = (event, newValue) => {
     setSelectedGenre(newValue);
+  };
+
+  const handleCardClick = (movieID) => {
+    navigate(`/movie/${movieID}`);
   };
 
   return (
@@ -76,25 +87,28 @@ export default function HomePage() {
           Top 10 Movies {selectedGenre !== 'All' && `in ${selectedGenre}`}
         </Typography>
         <Box
+          ref={scrollableContainerRef}
           sx={{
             display: 'flex',
             overflowX: 'auto',
-            gap: 5,
+            gap: 2,
             padding: 2,
             '&::-webkit-scrollbar': {
-              display: 'one', // Hide scrollbar for a cleaner look
+              display: 'one',
             },
           }}
         >
           {topMovies.length > 0 ? (
             topMovies.map((movie) => (
               <Card
-                key={movie.movieID}
+                key={movie.movieid}
                 sx={{
-                  minWidth: 200,
-                  flexShrink: 0, // Prevent cards from shrinking in the flex container
+                  minWidth: 300,
+                  cursor: 'pointer',
                 }}
+                onClick={() => handleCardClick(movie.movieid)}
               >
+                {/* Movie Poster */}
                 <CardMedia
                   component="img"
                   height="300"
@@ -102,11 +116,22 @@ export default function HomePage() {
                   alt={movie.title}
                   sx={{
                     objectFit: 'cover', // Ensures the poster covers the container without distortion
+                    width: '100%', // Make sure the width fits the container
                   }}
                 />
-                <CardContent>
+
+                {/* <CardContent>
                   <Typography variant="h6">{movie.title}</Typography>
                   <Typography variant="body2" color="text.secondary">
+                    Rating: {movie.average_rating ? parseFloat(movie.average_rating).toFixed(1) : 'N/A'}
+                  </Typography>
+                </CardContent> */}
+
+                <CardContent>
+                  <Typography variant="h6"
+                    sx={{ borderRadius: '5px', textAlign: 'center' }}>{movie.title}</Typography>
+                  <Typography variant="body2" color="text.secondary"
+                    sx={{ borderRadius: '5px', textAlign: 'center' }}>
                     Rating: {movie.average_rating ? parseFloat(movie.average_rating).toFixed(1) : 'N/A'}
                   </Typography>
                 </CardContent>

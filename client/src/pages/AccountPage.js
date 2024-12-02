@@ -51,7 +51,7 @@ export default function AccountPage({ userId }) {
         localStorage.removeItem('userId');
 
         // Reset AuthContext
-        // setAuthState({ userId: null });
+        setAuthState({ userId: null });
 
         // Redirect to login page
         navigate('/login');
