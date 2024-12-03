@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -39,7 +39,7 @@ export default function NavBar() {
               textDecoration: 'none',
             }}
           >
-            <NavLink to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+            <NavLink to="/" style={{ color: 'Inherit', textDecoration: 'none' }}>
               Filmix
             </NavLink>
           </Typography>

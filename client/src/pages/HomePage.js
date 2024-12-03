@@ -84,7 +84,7 @@ export default function HomePage() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         minHeight: '100vh',
-        color: 'white',
+        color: 'LightSlateGray',
         padding: 4,
       }}
     >
@@ -102,10 +102,22 @@ export default function HomePage() {
           value={selectedGenre}
           onChange={handleGenreChange}
           indicatorColor="primary"
-          textColor="primary"
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ mt: 4 }}
+          sx={{
+            mt: 4,
+            color: 'darkgrey', // Default tab color
+            '& .MuiTab-root': {
+              color: 'darkgrey', // Inactive tab color
+              '&.Mui-selected': {
+                color: 'white', // Active tab color
+                fontWeight: 'bold', // Bold for the selected tab
+              },
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'white', // Indicator color
+            },
+          }}
         >
           {genres.map((genre) => (
             <Tab key={genre} label={genre} value={genre} />

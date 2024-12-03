@@ -6,7 +6,6 @@ const config = require('../config.json');
 export default function SearchPage() {
     const [searchParams, setSearchParams] = useState({
         title: '',
-        tag: '',
         genre: '',
         director: '',
         language: '',
@@ -97,14 +96,6 @@ export default function SearchPage() {
                     label="Title"
                     name="title"
                     value={searchParams.title}
-                    onChange={handleInputChange}
-                    variant="outlined"
-                    fullWidth
-                />
-                <TextField
-                    label="Tag"
-                    name="tag"
-                    value={searchParams.tag}
                     onChange={handleInputChange}
                     variant="outlined"
                     fullWidth

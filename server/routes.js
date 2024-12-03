@@ -30,17 +30,12 @@ const top10Movies = async function (req, res) {
         SELECT
             m.movieID,
             m.title,
-            mr.average_rating,
-            ms.poster_link,
-            k.tmdbid
-        FROM
-            movies as m
-        LEFT JOIN links k ON m.movieID=k.movieID
-        LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
-        LEFT JOIN Movieratings mr ON m.movieID = mr.movieID
-        WHERE mr.n_rating>=100
-            AND mr.average_rating IS NOT NULL
-        ORDER BY mr.average_rating DESC
+            m.average_rating,
+            m.tmdbid
+        FROM Movies_add as m
+        WHERE m.n_rating>=100
+            AND m.average_rating IS NOT NULL
+        ORDER BY m.average_rating DESC
         LIMIT 10;
         `, (err, data) => {
         if (err) {
@@ -58,23 +53,16 @@ const top10Movies = async function (req, res) {
 const top10Genre = async function (req, res) {
     connection.query(`
         SELECT
-            mg.movieID,
+            m.movieID,
             m.title,
-            mr.average_rating,
-            ms.poster_link,
-            k.tmdbid
-        FROM
-            Moviesgenres as mg
-        JOIN
-            movies as m ON mg.movieID=m.movieID
-        LEFT JOIN links k ON m.movieID=k.movieID
-        LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
-        LEFT JOIN Movieratings mr ON m.movieID = mr.movieID
-        WHERE mg.genre in ('${req.params.genre}')
-            AND mr.average_rating IS NOT NULL
-            AND mr.n_rating >=100
+            m.average_rating,
+            m.tmdbid
+        FROM movies_add as m
+        WHERE m.genre ILIKE '%${req.params.genre}%'
+            AND m.average_rating IS NOT NULL
+            AND m.n_rating >=100
         ORDER BY
-            mr.average_rating DESC
+            m.average_rating DESC
         LIMIT 10;
         `, (err, data) => {
         if (err) {
@@ -177,19 +165,14 @@ const likedMovies = async (req, res) => {
     try {
         const query = `
             SELECT
-                m.movieID,
+                l.movieID,
                 m.title,
-                ms.poster_link,
-                mr.average_rating,
-                k.tmdbid
-            FROM Movies m
-            JOIN likes l ON m.movieID = l.movieID
-            LEFT JOIN links k ON m.movieID = k.movieID
-            LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
-            LEFT JOIN Movieratings mr
-                ON m.movieID = mr.movieID
+                m.tmdbid,
+                m.average_rating
+            FROM likes l
+            JOIN Movies_add m ON m.movieID=l.movieID
             WHERE l.userID = $1
-            ORDER BY mr.average_rating;
+            ORDER BY m.average_rating DESC;
         `;
 
         const result = await connection.query(query, [userID]);
@@ -213,21 +196,16 @@ const top3Genres = async function (req, res) {
             WHERE l.userID = '${req.params.userID}'
             GROUP BY mg.genre
             ORDER BY COUNT(*) DESC
-            LIMIT 3)
-        SELECT
-            DISTINCT m.movieID,
-            m.title,
-            mr.average_rating,
-            ms.poster_link,
-            k.tmdbid
-        FROM Movies m
+            LIMIT 3
+        )
+        SELECT m.movieID, m.title, m.average_rating, m.tmdbid
+        FROM Movies_add m
         JOIN MoviesGenres mg ON m.movieID = mg.movieID
         JOIN TopGenres tg ON mg.genre = tg.genre
-        JOIN MovieRatings mr ON m.movieID = mr.movieID
-        LEFT JOIN links k ON m.movieID=k.movieID
-        LEFT JOIN MoviesSupplement ms ON k. imdb_id = ms.imdb_id
-        WHERE m.movieID NOT IN (SELECT movieID FROM Likes WHERE userID = '${req.params.userID}')
-            AND n_rating>1000
+        WHERE m.movieID NOT IN (
+            SELECT movieID FROM Likes WHERE userID = '${req.params.userID}'
+        )
+        AND n_rating>1000
         ORDER BY average_rating DESC
         LIMIT 10;
     `, (err, data) => {
@@ -246,30 +224,24 @@ const top3Genres = async function (req, res) {
 const top3Directors = async function (req, res) {
     connection.query(`
         WITH TopDirectors AS (
-            SELECT ms.director
+            SELECT m.director
             FROM Likes l
-            JOIN Movies m ON l.movieID = m.movieID
-            LEFT JOIN links k ON m.movieID=k.movieID
-            LEFT JOIN MoviesSupplement ms ON k. imdb_id = ms.imdb_id
+            JOIN Movies_add m ON l.movieID = m.movieID
             WHERE l.userID = '${req.params.userID}'
-            GROUP BY ms.director
+            GROUP BY m.director
             ORDER BY COUNT(*) DESC
             LIMIT 3)
         SELECT
-            DISTINCT m.movieID,
+            m.movieID,
             m.title,
-            mr.average_rating,
-            ms.poster_link,
-            k.tmdbid
-        FROM Movies m
-        LEFT JOIN links k ON m.movieID=k.movieID
-        LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
-        JOIN TopDirectors td ON ms.director = td.director
-        JOIN MovieRatings mr ON m.movieID = mr.movieID
+            m.average_rating,
+            m.tmdbid
+        FROM Movies_add m
+        JOIN TopDirectors td ON m.director = td.director
         WHERE m.movieID NOT IN (SELECT movieID FROM Likes WHERE userID = '${req.params.userID}')
             /*AND mr.n_rating > 1000*/
-        ORDER BY mr.average_rating DESC
-        LIMIT 10
+        ORDER BY m.average_rating DESC
+        LIMIT 10;
     `, (err, data) => {
         if (err) {
             console.error('Database query error:', err);
@@ -285,41 +257,37 @@ const top3Directors = async function (req, res) {
 // 1.8 app.get("/recommendbytags/:userID", routes.recommendByTags)
 const recommendByTags = async function (req, res) {
     connection.query(`
-        WITH top_tags as (
-            SELECT tag,tagid,count(*) as n_liked_tags
-            FROM (
-                SELECT
-                    l.*,
-                    gs.tagid,
-                    gs.relevance,
-                    gt.tag
-                FROM likes l
-                LEFT JOIN genomescores gs ON l.movieID=gs.movieID
-                LEFT JOIN genometags gt ON gs.tagid=gt.tagid
-                WHERE l.userID = '${req.params.userID}' AND relevance>=0.5 /*we can change this threshold*/
-                ORDER BY l.movieID,gs.relevance DESC) ttt
-            GROUP BY tag,tagid
-            ORDER BY n_liked_tags DESC
-            LIMIT 10)
-        SELECT
-            DISTINCT m.movieID,
-            m.title,
-            mr.average_rating,
-            ms.poster_link,
-            k.tmdbid
-        FROM (SELECT DISTINCT movieID FROM genomescores WHERE relevance>0.5 and tagid
-                IN (SELECT tagid FROM top_tags)) gs
-        JOIN Movies m ON gs.movieid=m.movieid
-        JOIN MovieRatings mr ON m.movieID = mr.movieID
-        LEFT JOIN links k ON m.movieID=k.movieID
-        LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
-        WHERE m.movieID NOT IN (
-            SELECT movieID FROM Likes WHERE userID = '${req.params.userID}'
+        WITH top_tags AS (
+            SELECT
+                gs.tagid
+            FROM likes l
+            JOIN genomescores gs ON l.movieID = gs.movieID
+            WHERE gs.relevance >= 0.5
+            GROUP BY gs.tagid
+            ORDER BY COUNT(*) DESC
+            LIMIT 10
+        ),
+        filtered_movies AS (
+            SELECT DISTINCT gm.movieID
+            FROM genomescores gm
+            JOIN top_tags tt ON gm.tagid = tt.tagid
+            WHERE gm.relevance > 0.5
         )
-        /*AND mr.n_rating > 1000*/
-        ORDER BY mr.average_rating DESC
+        SELECT
+            m.movieID,
+            m.title,
+            m.average_rating,
+            m.tmdbid
+        FROM filtered_movies fm
+        JOIN Movies_add m ON fm.movieID = m.movieID
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM Likes l
+            WHERE l.movieID = m.movieID AND l.userID = '${req.params.userID}'
+        )
+            AND n_rating>100
+        ORDER BY m.average_rating DESC
         LIMIT 10;
-
     `, (err, data) => {
         if (err) {
             console.error('Database query error:', err);
@@ -341,18 +309,11 @@ const searchMovies = async (req, res) => {
         SELECT DISTINCT
             m.movieID,
             m.title,
-            ms.release_year,
-            ms.director,
-            mr.average_rating,
-            ms.poster_link,
-            k.tmdbid
-        FROM Movies m
-        LEFT JOIN links k ON m.movieID = k.movieID
-        LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
-        LEFT JOIN MoviesGenres mg ON m.movieID = mg.movieID
-        LEFT JOIN GenomeScores gs ON m.movieID = gs.movieID
-        LEFT JOIN GenomeTags gt ON gs.tagID = gt.tagID
-        LEFT JOIN MovieRatings mr ON m.movieID = mr.movieID
+            m.release_year,
+            m.director,
+            m.average_rating,
+            m.tmdbid
+        FROM Movies_add m
         WHERE 1=1`;
 
     // Parameters array to safely insert values
@@ -363,32 +324,28 @@ const searchMovies = async (req, res) => {
         queryParams.push(`%${title}%`);
         query += ` AND m.title ILIKE $${queryParams.length}`;
     }
-    if (tag) {
-        queryParams.push(`%${tag}%`);
-        query += ` AND gt.tag ILIKE $${queryParams.length}`;
-    }
     if (genre) {
         queryParams.push(`%${genre}%`);
-        query += ` AND mg.genre ILIKE $${queryParams.length}`;
+        query += ` AND m.genre ILIKE $${queryParams.length}`;
     }
     if (director) {
         queryParams.push(`%${director}%`);
-        query += ` AND ms.director ILIKE $${queryParams.length}`;
+        query += ` AND m.director ILIKE $${queryParams.length}`;
     }
     if (language) {
         queryParams.push(`%${language}%`);
-        query += ` AND ms.language ILIKE $${queryParams.length}`;
+        query += ` AND m.language ILIKE $${queryParams.length}`;
     }
     if (release_year) {
         const releaseYearInt = parseInt(release_year, 10); // Parse release year as integer
         if (!isNaN(releaseYearInt)) {
             queryParams.push(releaseYearInt);
-            query += ` AND ms.release_year = $${queryParams.length}`;
+            query += ` AND m.release_year = $${queryParams.length}`;
         }
     }
 
     // Order by average rating and release year
-    query += ` ORDER BY mr.average_rating DESC NULLS LAST, ms.release_year DESC`;
+    query += ` ORDER BY m.average_rating DESC NULLS LAST, m.release_year DESC`;
 
     // Execute the query with parameters
     try {
@@ -411,20 +368,15 @@ const movieDetails = async (req, res) => {
             SELECT
                 m.movieID,
                 m.title,
-                ms.release_year,
-                ms.director,
-                ms.language,
-                mg.genre,
-                ms.poster_link,
-                mr.average_rating,
-                k.tmdbid
-            FROM Movies m
-            LEFT JOIN links k ON m.movieID=k.movieID
-            LEFT JOIN MoviesSupplement ms ON k. imdb_id = ms.imdb_id
-            LEFT JOIN (SELECT movieid, STRING_AGG(genre, ',') AS genre FROM moviesgenres GROUP BY movieid) mg
-                ON m.movieID = mg.movieID
-            LEFT JOIN MovieRatings mr ON m.movieID = mr.movieID
-            WHERE m.movieID = $1;
+                m.release_year,
+                m.director,
+                m.language,
+                m.genre,
+                m.average_rating,
+                m.tmdbid
+            FROM Movies_add m
+            WHERE m.movieID=$1
+            ORDER BY average_rating DESC;
         `;
 
         const result = await connection.query(query, [movieID]);
