@@ -31,7 +31,8 @@ const top10Movies = async function (req, res) {
             m.movieID,
             m.title,
             mr.average_rating,
-            ms.poster_link
+            ms.poster_link,
+            k.tmdbid
         FROM
             movies as m
         LEFT JOIN links k ON m.movieID=k.movieID
@@ -60,7 +61,8 @@ const top10Genre = async function (req, res) {
             mg.movieID,
             m.title,
             mr.average_rating,
-            ms.poster_link
+            ms.poster_link,
+            k.tmdbid
         FROM
             Moviesgenres as mg
         JOIN
@@ -178,7 +180,8 @@ const likedMovies = async (req, res) => {
                 m.movieID,
                 m.title,
                 ms.poster_link,
-                mr.average_rating
+                mr.average_rating,
+                k.tmdbid
             FROM Movies m
             JOIN likes l ON m.movieID = l.movieID
             LEFT JOIN links k ON m.movieID = k.movieID
@@ -215,7 +218,8 @@ const top3Genres = async function (req, res) {
             DISTINCT m.movieID,
             m.title,
             mr.average_rating,
-            ms.poster_link
+            ms.poster_link,
+            k.tmdbid
         FROM Movies m
         JOIN MoviesGenres mg ON m.movieID = mg.movieID
         JOIN TopGenres tg ON mg.genre = tg.genre
@@ -255,7 +259,8 @@ const top3Directors = async function (req, res) {
             DISTINCT m.movieID,
             m.title,
             mr.average_rating,
-            ms.poster_link
+            ms.poster_link,
+            k.tmdbid
         FROM Movies m
         LEFT JOIN links k ON m.movieID=k.movieID
         LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
@@ -300,7 +305,8 @@ const recommendByTags = async function (req, res) {
             DISTINCT m.movieID,
             m.title,
             mr.average_rating,
-            ms.poster_link
+            ms.poster_link,
+            k.tmdbid
         FROM (SELECT DISTINCT movieID FROM genomescores WHERE relevance>0.5 and tagid
                 IN (SELECT tagid FROM top_tags)) gs
         JOIN Movies m ON gs.movieid=m.movieid
@@ -338,7 +344,8 @@ const searchMovies = async (req, res) => {
             ms.release_year,
             ms.director,
             mr.average_rating,
-            ms.poster_link
+            ms.poster_link,
+            k.tmdbid
         FROM Movies m
         LEFT JOIN links k ON m.movieID = k.movieID
         LEFT JOIN MoviesSupplement ms ON k.imdb_id = ms.imdb_id
@@ -409,7 +416,8 @@ const movieDetails = async (req, res) => {
                 ms.language,
                 mg.genre,
                 ms.poster_link,
-                mr.average_rating
+                mr.average_rating,
+                k.tmdbid
             FROM Movies m
             LEFT JOIN links k ON m.movieID=k.movieID
             LEFT JOIN MoviesSupplement ms ON k. imdb_id = ms.imdb_id

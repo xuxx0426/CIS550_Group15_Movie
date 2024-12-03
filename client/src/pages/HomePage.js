@@ -12,26 +12,56 @@ export default function HomePage() {
   const scrollableContainerRef = useRef(null);
 
   // Fetch the top 10 movies or movies by genre
-  const fetchMovies = (genre) => {
+  const fetchMovies = async (genre) => {
     const route =
       genre === 'All'
         ? `http://${config.server_host}:${config.server_port}/top10movies`
         : `http://${config.server_host}:${config.server_port}/top10bygenre/${genre}`;
 
-    fetch(route)
-      .then((res) => res.json())
-      .then((data) => {
-        setTopMovies(data);
-        setError(null);
-      })
-      .catch((err) => {
-        setError('Error fetching movies');
-        console.error(err);
-      });
-  };
+    try {
+      const response = await fetch(route);
+
+      if (!response.ok) {
+        throw new Error('Error fetching movies');
+      }
+      const data = await response.json();
+
+      // Validate that the response is an array
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid data format: Expected an array.');
+      }
+
+      // Fetch posters for each movie
+      const moviesWithPosters = await Promise.all(
+        data.map(async (movie) => {
+          if (movie.tmdbid) {
+            try {
+              const tmdbResponse = await fetch(
+                `https://api.themoviedb.org/3/movie/${Math.trunc(movie.tmdbid)}?api_key=${config.TMDB_API_KEY}`
+              );
+              const tmdbData = await tmdbResponse.json();
+
+              if (tmdbData.poster_path) {
+                movie.poster_link = `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`;
+              }
+            } catch (err) {
+              console.log(`Error fetching poster for TMDB ID ${movie.tmdbid}:`, err);
+            }
+          }
+          return movie;
+        })
+      );
+      setTopMovies(moviesWithPosters);
+      setError(null);
+    } catch (err) {
+      setError('Error fetching movies');
+      console.error(err);
+    };
+  }
 
   // Fetch movies on component mount or when the selected genre changes
   useEffect(() => {
+    setTopMovies([]); // Clear previous state
     fetchMovies(selectedGenre);
     // Reset scroll position to the start
     if (scrollableContainerRef.current) {
@@ -145,3 +175,4 @@ export default function HomePage() {
     </Box>
   );
 }
+

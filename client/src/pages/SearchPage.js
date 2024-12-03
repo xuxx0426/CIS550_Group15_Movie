@@ -28,6 +28,13 @@ export default function SearchPage() {
 
     // Handle form submission
     const handleSearch = async () => {
+        // Check if at least one search parameter is provided
+        const hasInput = Object.values(searchParams).some((value) => value.trim() !== '');
+
+        if (!hasInput) {
+            setError('Enter something for searching'); // Set an error message
+            return; // Prevent further execution
+        }
         setLoading(true);
         setError(null);
         setResults([]);
@@ -41,7 +48,26 @@ export default function SearchPage() {
                 throw new Error(data.error || 'Failed to fetch search results.');
             }
 
-            setResults(data);
+            // Fetch posters for each seach result
+            const moviesWithPosters = await Promise.all(
+                data.map(async (movie) => {
+                    if (movie.tmdbid) {
+                        try {
+                            const tmdbResponse = await fetch(
+                                `https://api.themoviedb.org/3/movie/${Math.trunc(movie.tmdbid)}?api_key=${config.TMDB_API_KEY}`
+                            );
+                            const tmdbData = await tmdbResponse.json();
+                            if (tmdbData.poster_path) {
+                                movie.poster_link = `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`;
+                            }
+                        } catch (err) {
+                            console.error(`Error fetching poster for TMDB ID ${movie.tmdbid}:`, err);
+                        }
+                    }
+                    return movie;
+                })
+            )
+            setResults(moviesWithPosters);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -139,7 +165,7 @@ export default function SearchPage() {
                 {results.map(movie => (
                     <Card
                         key={movie.movieid}
-                        sx={{ minWidth: 200, cursor: 'pointer', }}
+                        sx={{ maxWidth: 200, cursor: 'pointer', }}
                         onClick={() => handleCardClick(movie.movieid)}>
                         <CardMedia
                             component="img"
@@ -154,7 +180,7 @@ export default function SearchPage() {
                             }}
                         />
                         <CardContent>
-                            <Typography variant="h6" noWrap>
+                            <Typography variant="h6" component="div" noWrap>
                                 {movie.title}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">

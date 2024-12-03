@@ -19,10 +19,32 @@ export default function MyListPage() {
             setLoading(true);
             const response = await fetch(`http://${config.server_host}:${config.server_port}/likedmovies/${userId}`);
             const data = await response.json();
+
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to fetch liked movies.');
             }
-            setLikedMovies(data);
+
+            // Fetch posters for each liked movie
+            const moviesWithPosters = await Promise.all(
+                data.map(async (movie) => {
+                    if (movie.tmdbid) {
+                        try {
+                            const tmdbResponse = await fetch(
+                                `https://api.themoviedb.org/3/movie/${Math.trunc(movie.tmdbid)}?api_key=${config.TMDB_API_KEY}`
+                            );
+                            const tmdbData = await tmdbResponse.json();
+                            if (tmdbData.poster_path) {
+                                movie.poster_link = `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`;
+                            }
+                        } catch (err) {
+                            console.error(`Error fetching poster for TMDB ID ${movie.tmdbid}:`, err);
+                        }
+                    }
+                    return movie;
+                })
+            );
+
+            setLikedMovies(moviesWithPosters);
         } catch (err) {
             setError(err.message);
         } finally {

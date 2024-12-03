@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, Card, CardMedia, CircularProgress, Alert } from '@mui/material';
 import { useAuth } from '../context/AuthContext'; // Access AuthContext for user state
-// import { likeMovie } from '../../../server/routes.js';
 const config = require('../config.json');
 
 export default function MovieDetailsPage() {
@@ -10,6 +9,7 @@ export default function MovieDetailsPage() {
     const { authState } = useAuth(); // Get the logged-in user's information
     const navigate = useNavigate();
 
+    const [posterUrl, setPosterUrl] = useState(null);
     const [movieDetails, setMovieDetails] = useState(null);
     const [liked, setLiked] = useState(false); // Track if the movie is liked
     const [loading, setLoading] = useState(true);
@@ -26,6 +26,18 @@ export default function MovieDetailsPage() {
                 }
                 const data = await response.json();
                 setMovieDetails(data[0]);
+
+                // Fetch TMDB poster using tmdbid
+                if (data[0]?.tmdbid) {
+                    const tmdbid = Math.trunc(data[0].tmdbid);
+                    const tmdbResponse = await fetch(
+                        `https://api.themoviedb.org/3/movie/${tmdbid}?api_key=${config.TMDB_API_KEY}`
+                    );
+                    const tmdbData = await tmdbResponse.json();
+                    if (tmdbData.poster_path) {
+                        setPosterUrl(`https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`);
+                    }
+                }
 
                 // If the user is logged in, check if the movie is liked
                 if (authState.userId) {
@@ -117,7 +129,7 @@ export default function MovieDetailsPage() {
                 <Card sx={{ maxWidth: 400 }}>
                     <CardMedia
                         component="img"
-                        image={movieDetails.poster_link || 'https://media.istockphoto.com/id/1396814518/vector/image-coming-soon-no-photo-no-thumbnail-image-available-vector-illustration.jpg?s=612x612&w=0&k=20&c=hnh2OZgQGhf0b46-J2z7aHbIWwq8HNlSDaNp2wn_iko='}
+                        image={posterUrl || 'https://media.istockphoto.com/id/1396814518/vector/image-coming-soon-no-photo-no-thumbnail-image-available-vector-illustration.jpg?s=612x612&w=0&k=20&c=hnh2OZgQGhf0b46-J2z7aHbIWwq8HNlSDaNp2wn_iko='}
                         alt={movieDetails.title}
                         sx={{ objectFit: 'cover' }}
                     />

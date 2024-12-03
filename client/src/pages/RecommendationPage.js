@@ -41,8 +41,28 @@ export default function RecommendationPage() {
             // Shuffle the array
             const shuffledRecommendations = uniqueRecommendations.sort(() => Math.random() - 0.5);
 
+            // Fetch posters for each result
+            const moviesWithPosters = await Promise.all(
+                shuffledRecommendations.map(async (movie) => {
+                    if (movie.tmdbid) {
+                        try {
+                            const tmdbResponse = await fetch(
+                                `https://api.themoviedb.org/3/movie/${Math.trunc(movie.tmdbid)}?api_key=${config.TMDB_API_KEY}`
+                            );
+                            const tmdbData = await tmdbResponse.json();
+                            if (tmdbData.poster_path) {
+                                movie.poster_link = `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`;
+                            }
+                        } catch (err) {
+                            console.error(`Error fetching poster for TMDB ID ${movie.tmdbid}:`, err);
+                        }
+                        return movie;
+                    }
+                })
+            )
+
             // Update state with unique recommendations
-            setRecommendations(uniqueRecommendations);
+            setRecommendations(shuffledRecommendations);
         } catch (err) {
             setError(err.message);
         } finally {
