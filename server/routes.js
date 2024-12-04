@@ -262,7 +262,7 @@ const recommendByTags = async function (req, res) {
                 gs.tagid
             FROM likes l
             JOIN genomescores gs ON l.movieID = gs.movieID
-            WHERE gs.relevance >= 0.5
+            WHERE gs.relevance >= 0.5 AND l.userID = '${req.params.userID}'
             GROUP BY gs.tagid
             ORDER BY COUNT(*) DESC
             LIMIT 10
@@ -306,7 +306,7 @@ const searchMovies = async (req, res) => {
 
     // Base query with joins
     let query = `
-        SELECT DISTINCT
+        SELECT
             m.movieID,
             m.title,
             m.release_year,

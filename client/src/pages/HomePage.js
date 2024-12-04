@@ -63,6 +63,7 @@ export default function HomePage() {
   useEffect(() => {
     setTopMovies([]); // Clear previous state
     fetchMovies(selectedGenre);
+
     // Reset scroll position to the start
     if (scrollableContainerRef.current) {
       scrollableContainerRef.current.scrollLeft = 0;
@@ -161,13 +162,6 @@ export default function HomePage() {
                     width: '100%', // Make sure the width fits the container
                   }}
                 />
-
-                {/* <CardContent>
-                  <Typography variant="h6">{movie.title}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Rating: {movie.average_rating ? parseFloat(movie.average_rating).toFixed(1) : 'N/A'}
-                  </Typography>
-                </CardContent> */}
 
                 <CardContent>
                   <Typography variant="h6"

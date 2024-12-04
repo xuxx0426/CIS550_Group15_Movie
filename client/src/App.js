@@ -37,8 +37,7 @@ export default function App() {
           <Route path="/movie/:movieID" element={<MovieDetailsPage />} />
           <Route path="/mylist" element={<MyListPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/recommendations" element={<RecommendationPage />} /> {/* Add this route */}
-
+          <Route path="/recommendations" element={<RecommendationPage />} />
           <Route path="*" element={<HomePage />} /> {/* Fallback Route */}
         </Routes>
       </BrowserRouter>

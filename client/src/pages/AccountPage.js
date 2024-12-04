@@ -95,13 +95,11 @@ export default function AccountPage({ userId }) {
                 <Button variant="contained" color="primary" onClick={handlePasswordUpdate}>
                     Save Changes
                 </Button>
+                {/* Logout Button */}
+                <Button variant="contained" color="secondary" onClick={handleLogout}>
+                    Logout
+                </Button>
             </Box>
-
-            {/* Logout Button */}
-            <Button variant="contained" color="secondary" onClick={handleLogout}>
-                Logout
-            </Button>
-
         </Container>
     );
 }

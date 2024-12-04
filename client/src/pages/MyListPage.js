@@ -62,7 +62,6 @@ export default function MyListPage() {
 
     const handleRemove = async (movieID) => {
         const payload = { userID: authState.userId || localStorage.getItem('userId'), movieID }; // Define the payload
-        console.log('Payload sent to the server:', payload); // Debugging
 
         try {
             const response = await fetch(`http://${config.server_host}:${config.server_port}/removelikedmovie`, {
@@ -76,7 +75,7 @@ export default function MyListPage() {
                 const data = await response.json();
                 throw new Error(data.error || 'Failed to remove the movie.');
             }
-            // console.log('Movie removed successfully:', data);
+
             setLikedMovies(likedMovies.filter(movie => String(movie.movieid) !== String(movieID))); // Update state
         } catch (err) {
             console.error(err);

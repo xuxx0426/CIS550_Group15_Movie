@@ -62,7 +62,7 @@ export default function RecommendationPage() {
             )
 
             // Update state with unique recommendations
-            setRecommendations(shuffledRecommendations);
+            setRecommendations(moviesWithPosters);
         } catch (err) {
             setError(err.message);
         } finally {

@@ -37,7 +37,7 @@ app.get("/top3directors/:userID", routes.top3Directors)
 // 1.8 Route to find tags in liked movies, rank by frequency, and create recommendations based on tags
 app.get("/recommendbytags/:userID", routes.recommendByTags)
 
-// 1.9 Route to search movies by title, tag, genre, director, language, or release year
+// 1.9 Route to search movies by title, genre, director, language, or release year
 app.get("/searchmovies", routes.searchMovies);
 
 // 1.10 Route to display comprehensive movie details
